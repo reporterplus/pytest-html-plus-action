@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 
-args=""
+args="${INPUT_PYTEST_ARGS}"
+
 
 [ -n "${INPUT_JSON_REPORT}" ] && args="$args --json-report=${INPUT_JSON_REPORT}"
 [ -n "${INPUT_CAPTURE_SCREENSHOTS}" ] && args="$args --capture-screenshots=${INPUT_CAPTURE_SCREENSHOTS}"
