@@ -15,4 +15,4 @@ args=""
 
 echo "Running pytest with args: $args"
 
-pytest tests/ $args
+pytest $args
