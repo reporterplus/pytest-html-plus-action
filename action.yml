@@ -54,5 +54,5 @@ runs:
       shell: bash
 
     - name: Run entrypoint
-      run: ./entrypoint.sh
+      run: "${GITHUB_ACTION_PATH}/entrypoint.sh"
       shell: bash
