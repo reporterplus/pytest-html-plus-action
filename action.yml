@@ -1,8 +1,44 @@
 name: "Pytest HTML Plus Action"
 description: "Run pytest with pytest-html-plus and generate rich reports"
 inputs:
+  test-path:
+    description: "Optional path or target for pytest (e.g. 'tests/' or 'src/tests/test_file.py'). If empty, pytest discovery runs from repo root."
+    required: false
+    default: ""
   pytest-args:
-    description: "Arguments to pass directly to pytest (e.g. 'tests/ --rerun=1')"
+    description: "Arguments to pass directly to pytest (e.g. '--cov=... --reruns 1')"
+    required: false
+    default: ""
+  json-report:
+    description: "Path for JSON report"
+    required: false
+    default: "final_report.json"
+  capture-screenshots:
+    description: "Capture screenshots (failed, all, none)"
+    required: false
+    default: "failed"
+  html-output:
+    description: "Directory to save HTML report"
+    required: false
+    default: "report_output"
+  screenshots:
+    description: "Directory to save screenshots"
+    required: false
+    default: "screenshots"
+  plus-email:
+    description: "Send HTML report via email"
+    required: false
+    default: "false"
+  should-open-report:
+    description: "When to open the report (always, failed, never)"
+    required: false
+    default: "failed"
+  generate-xml:
+    description: "Generate JUnit-style XML"
+    required: false
+    default: "false"
+  xml-report:
+    description: "Path to XML report"
     required: false
     default: ""
 

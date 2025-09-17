@@ -1,34 +1,36 @@
 #!/bin/bash
 set -e
 
-echo "🚀 Entrypoint running..."
+echo "👉 Dumping INPUT_ vars:"
+env | grep INPUT_ || true
 
-args="${INPUT_PYTEST_ARGS}"
+echo "🚀 [pytest-html-plus-action] Entrypoint started"
+echo "👉 Python version: $(python --version)"
+echo "👉 Pytest version: $(pytest --version)"
 
-if [ "${INPUT_JSON_REPORT}" != "" ]; then
-  args="$args --json-report=${INPUT_JSON_REPORT}"
-fi
-if [ "${INPUT_HTML_OUTPUT}" != "" ]; then
-  args="$args --html-output=${INPUT_HTML_OUTPUT}"
-fi
-if [ "${INPUT_SCREENSHOTS}" != "" ]; then
-  args="$args --screenshots=${INPUT_SCREENSHOTS}"
-fi
-if [ "${INPUT_PLUS_EMAIL}" = "true" ]; then
-  args="$args --plus-email"
-fi
-if [ "${INPUT_GENERATE_XML}" = "true" ]; then
-  args="$args --generate-xml"
-fi
-if [ "${INPUT_XML_REPORT}" != "" ]; then
-  args="$args --xml-report=${INPUT_XML_REPORT}"
-fi
-if [ "${INPUT_CAPTURE_SCREENSHOTS}" != "" ]; then
-  args="$args --capture-screenshots=${INPUT_CAPTURE_SCREENSHOTS}"
-fi
-if [ "${INPUT_SHOULD_OPEN_REPORT}" != "" ]; then
-  args="$args --should-open-report=${INPUT_SHOULD_OPEN_REPORT}"
+# Read inputs (GitHub provides them as env vars: INPUT_<NAME_UPPER>)
+TEST_PATH="${INPUT_TEST_PATH}"
+PYTEST_ARGS="${INPUT_PYTEST_ARGS}"
+
+# Map plugin-specific options into PYTEST_ARGS
+[ -n "${INPUT_JSON_REPORT}" ] && PYTEST_ARGS="$PYTEST_ARGS --json-report=${INPUT_JSON_REPORT}"
+[ -n "${INPUT_HTML_OUTPUT}" ] && PYTEST_ARGS="$PYTEST_ARGS --html-output=${INPUT_HTML_OUTPUT}"
+[ -n "${INPUT_SCREENSHOTS}" ] && PYTEST_ARGS="$PYTEST_ARGS --screenshots=${INPUT_SCREENSHOTS}"
+[ "${INPUT_PLUS_EMAIL}" = "true" ] && PYTEST_ARGS="$PYTEST_ARGS --plus-email"
+[ "${INPUT_GENERATE_XML}" = "true" ] && PYTEST_ARGS="$PYTEST_ARGS --generate-xml"
+[ -n "${INPUT_XML_REPORT}" ] && PYTEST_ARGS="$PYTEST_ARGS --xml-report=${INPUT_XML_REPORT}"
+[ -n "${INPUT_CAPTURE_SCREENSHOTS}" ] && PYTEST_ARGS="$PYTEST_ARGS --capture-screenshots=${INPUT_CAPTURE_SCREENSHOTS}"
+[ -n "${INPUT_SHOULD_OPEN_REPORT}" ] && PYTEST_ARGS="$PYTEST_ARGS --should-open-report=${INPUT_SHOULD_OPEN_REPORT}"
+
+# Build final command
+if [ -n "${TEST_PATH}" ]; then
+  echo "👉 Using test path: ${TEST_PATH}"
+  CMD="pytest ${TEST_PATH} ${PYTEST_ARGS}"
+else
+  echo "👉 No test path provided; running pytest discovery from repo root"
+  CMD="pytest ${PYTEST_ARGS}"
 fi
 
-echo "👉 Final pytest command: pytest $args"
-pytest $args
+echo "👉 Final pytest command: $CMD"
+# Using 'bash -c' allows proper word-splitting of args that are quoted in the input.
+bash -c "$CMD"
