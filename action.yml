@@ -47,5 +47,12 @@ inputs:
     default: "false"
 
 runs:
-  using: "docker"
-  image: "Dockerfile"
+  using: "composite"
+  steps:
+    - name: Install pytest-html-plus
+      run: pip install pytest-html-plus
+      shell: bash
+
+    - name: Run entrypoint
+      run: ./entrypoint.sh
+      shell: bash
