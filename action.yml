@@ -54,5 +54,17 @@ runs:
       shell: bash
 
     - name: Run entrypoint
+      env:
+        INPUT_TESTPATH: ${{ inputs.testpath }}
+        INPUT_PYTESTARGS: ${{ inputs.pytestargs }}
+        INPUT_JSONREPORT: ${{ inputs.jsonreport }}
+        INPUT_SCREENSHOTS: ${{ inputs.screenshots }}
+        INPUT_HTMLOUTPUT: ${{ inputs.htmloutput }}
+        INPUT_PLUSEMAIL: ${{ inputs.plusemail }}
+        INPUT_GENERATEXML: ${{ inputs.generatexml }}
+        INPUT_XMLREPORT: ${{ inputs.xmlreport }}
+        INPUT_CAPTURESCREENSHOTS: ${{ inputs.capturescreenshots }}
+        INPUT_SHOULDOPENREPORT: ${{ inputs.shouldopenreport }}
+        INPUT_USEPOETRY: ${{ inputs.usepoetry }}
       run: "${GITHUB_ACTION_PATH}/entrypoint.sh"
       shell: bash
