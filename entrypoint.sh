@@ -22,7 +22,6 @@ PYTEST_ARGS="${INPUT_PYTEST_ARGS}"
 [ -n "${INPUT_CAPTURE_SCREENSHOTS}" ] && PYTEST_ARGS="$PYTEST_ARGS --capture-screenshots=${INPUT_CAPTURE_SCREENSHOTS}"
 [ -n "${INPUT_SHOULD_OPEN_REPORT}" ] && PYTEST_ARGS="$PYTEST_ARGS --should-open-report=${INPUT_SHOULD_OPEN_REPORT}"
 
-# Build final command
 if [ -n "${TEST_PATH}" ]; then
   echo "👉 Using test path: ${TEST_PATH}"
   CMD="pytest ${TEST_PATH} ${PYTEST_ARGS}"
@@ -31,6 +30,12 @@ else
   CMD="pytest ${PYTEST_ARGS}"
 fi
 
+# Switch to poetry if requested
+if [ "${INPUT_USE_POETRY}" = "true" ]; then
+  echo "👉 Running with Poetry"
+  CMD="poetry run $CMD"
+fi
+
 echo "👉 Final pytest command: $CMD"
-# Using 'bash -c' allows proper word-splitting of args that are quoted in the input.
 bash -c "$CMD"
+

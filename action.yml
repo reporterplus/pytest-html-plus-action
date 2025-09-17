@@ -41,6 +41,10 @@ inputs:
     description: "Path to XML report"
     required: false
     default: ""
+  use-poetry:
+    description: "If true, run pytest through poetry (poetry run pytest)"
+    required: false
+    default: "false"
 
 runs:
   using: "docker"
