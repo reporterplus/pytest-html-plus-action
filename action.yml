@@ -68,3 +68,7 @@ runs:
         INPUT_USEPOETRY: ${{ inputs.usepoetry }}
       run: "${GITHUB_ACTION_PATH}/entrypoint.sh"
       shell: bash
+  
+branding:
+  icon: "camera"
+  color: "green"
