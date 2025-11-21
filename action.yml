@@ -45,6 +45,14 @@ inputs:
     description: "If true, run pytest through poetry (poetry run pytest)"
     required: false
     default: "false"
+  gitbranch:
+    description: "If value passed, will show git branch name "
+    required: false
+    default: "NA"
+  gitcommit:
+    description: "If value passed, will show git commit id"
+    required: false
+    default: "NA"
 
 runs:
   using: "composite"
@@ -66,6 +74,8 @@ runs:
         INPUT_CAPTURESCREENSHOTS: ${{ inputs.capturescreenshots }}
         INPUT_SHOULDOPENREPORT: ${{ inputs.shouldopenreport }}
         INPUT_USEPOETRY: ${{ inputs.usepoetry }}
+        INPUT_GITBRANCH: ${{ inputs.gitbranch }}
+        INPUT_GITCOMMIT: ${{ inputs.gitcommit }}
       run: "${GITHUB_ACTION_PATH}/entrypoint.sh"
       shell: bash
   
