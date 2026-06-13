@@ -68,6 +68,18 @@ print(f"failed={failed}")
 print(f"skipped={skipped}")
 print(f"duration={duration}")
 summary_file = os.environ.get("GITHUB_STEP_SUMMARY")
+
+def short_failure_summary(item):
+    nodeid = item.get("nodeid") or item.get("name") or "<unknown>"
+    longrepr = item.get("longrepr") or item.get("message") or ""
+    if isinstance(longrepr, dict):
+        longrepr = longrepr.get("reprcrash", {}).get("message") or longrepr.get("message") or ""
+    text = str(longrepr).strip()
+    if not text:
+        return nodeid
+    return f"{nodeid}: {text.splitlines()[0]}"
+
+failed_items = [short_failure_summary(t) for t in results if t.get("status") in ("failed", "error")]
 if summary_file:
     with open(summary_file, "a", encoding="utf-8") as f:
         f.write("## pytest-html-plus summary\n")
@@ -76,6 +88,12 @@ if summary_file:
         f.write(f"- failed: {failed}\n")
         f.write(f"- skipped: {skipped}\n")
         f.write(f"- duration: {duration}s\n")
+        if failed_items:
+            f.write("\n### Failed cases\n")
+            for item in failed_items[:5]:
+                f.write(f"- {item}\n")
+            if len(failed_items) > 5:
+                f.write(f"- ... and {len(failed_items) - 5} more failures\n")
 PY
   then
     echo "👉 Exposed step outputs: total, passed, failed, skipped, duration"
@@ -96,14 +114,34 @@ passed = sum(1 for t in results if t.get("status") == "passed")
 failed = sum(1 for t in results if t.get("status") in ("failed", "error"))
 skipped = sum(1 for t in results if t.get("status") == "skipped")
 duration = sum(float(t.get("duration") or 0) for t in results)
-summary = (
-    "### pytest-html-plus summary\n"
-    f"- total: {total}\n"
-    f"- passed: {passed}\n"
-    f"- failed: {failed}\n"
-    f"- skipped: {skipped}\n"
-    f"- duration: {duration}s\n"
-)
+def short_failure_summary(item):
+    nodeid = item.get("nodeid") or item.get("name") or "<unknown>"
+    longrepr = item.get("longrepr") or item.get("message") or ""
+    if isinstance(longrepr, dict):
+        longrepr = longrepr.get("reprcrash", {}).get("message") or longrepr.get("message") or ""
+    text = str(longrepr).strip()
+    if not text:
+        return nodeid
+    return f"{nodeid}: {text.splitlines()[0]}"
+
+failed_items = [short_failure_summary(t) for t in results if t.get("status") in ("failed", "error")]
+
+summary_lines = [
+    "### pytest-html-plus summary",
+    f"- total: {total}",
+    f"- passed: {passed}",
+    f"- failed: {failed}",
+    f"- skipped: {skipped}",
+    f"- duration: {duration}s",
+]
+if failed_items:
+    summary_lines.append("")
+    summary_lines.append("### Failed cases")
+    for item in failed_items[:5]:
+        summary_lines.append(f"- {item}")
+    if len(failed_items) > 5:
+        summary_lines.append(f"- ... and {len(failed_items) - 5} more failures")
+summary = "\n".join(summary_lines)
 event_path = os.environ.get("GITHUB_EVENT_PATH")
 repo = os.environ.get("GITHUB_REPOSITORY")
 token = os.environ.get("INPUT_PUBLISH_GITHUB_SUMMARY")
@@ -140,12 +178,13 @@ try:
     with urllib.request.urlopen(req) as response:
         if response.status != 201:
             raise urllib.error.HTTPError(url, response.status, response.reason, response.headers, None)
+    sys.exit(0)
 except urllib.error.HTTPError as exc:
     sys.stderr.write(f"Warning: failed to post PR comment: {exc.code} {exc.reason}\n")
-    sys.exit(0)
+    sys.exit(1)
 except Exception as exc:
     sys.stderr.write(f"Warning: failed to post PR comment: {exc}\n")
-    sys.exit(0)
+    sys.exit(1)
 PY
       then
         echo "👉 PR summary comment posted successfully"
