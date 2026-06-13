@@ -1,5 +1,16 @@
 name: "Pytest HTML Plus Action"
 description: "Run pytest with pytest-html-plus and generate rich reports"
+outputs:
+  total:
+    description: "Total test count parsed from the JSON report"
+  passed:
+    description: "Passed test count parsed from the JSON report"
+  failed:
+    description: "Failed test count parsed from the JSON report"
+  skipped:
+    description: "Skipped test count parsed from the JSON report"
+  duration:
+    description: "Sum of test durations in seconds parsed from the JSON report"
 inputs:
   testpath:
     description: "Optional path or target for pytest (e.g. 'tests/' or 'src/tests/test_file.py'). If empty, pytest discovery runs from repo root."
@@ -53,6 +64,18 @@ inputs:
     description: "If value passed, will show git commit id"
     required: false
     default: "NA"
+  github_token:
+    description: "GitHub token used to post a summary comment on pull requests"
+    required: false
+    default: ""
+  upload_html_artifact:
+    description: "If true, upload the generated HTML report directory as a GitHub Actions artifact"
+    required: false
+    default: "false"
+  html_artifact_name:
+    description: "Artifact name for the uploaded HTML report"
+    required: false
+    default: "pytest-html-report"
 
 runs:
   using: "composite"
@@ -76,8 +99,17 @@ runs:
         INPUT_USEPOETRY: ${{ inputs.usepoetry }}
         INPUT_GITBRANCH: ${{ inputs.gitbranch }}
         INPUT_GITCOMMIT: ${{ inputs.gitcommit }}
+        INPUT_GITHUB_TOKEN: ${{ inputs.github_token }}
       run: "${GITHUB_ACTION_PATH}/entrypoint.sh"
       shell: bash
+
+    - name: Upload HTML report artifact
+      if: ${{ inputs.upload_html_artifact == 'true' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.html_artifact_name }}
+        path: ${{ inputs.htmloutput }}
+        if-no-files-found: warn
   
 branding:
   icon: "camera"
