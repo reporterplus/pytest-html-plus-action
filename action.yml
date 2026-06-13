@@ -12,23 +12,23 @@ outputs:
   duration:
     description: "Sum of test durations in seconds parsed from the JSON report"
 inputs:
-  testpath:
+  test_path:
     description: "Optional path or target for pytest (e.g. 'tests/' or 'src/tests/test_file.py'). If empty, pytest discovery runs from repo root."
     required: false
     default: ""
-  pytestargs:
+  pytest_args:
     description: "Arguments to pass directly to pytest (e.g. '--cov=... --reruns 1')"
     required: false
     default: ""
-  jsonreport:
+  json_report:
     description: "Path for JSON report"
     required: false
     default: "final_report.json"
-  capturescreenshots:
+  capture_screenshots:
     description: "Capture screenshots (failed, all, none)"
     required: false
     default: "failed"
-  htmloutput:
+  html_output:
     description: "Directory to save HTML report"
     required: false
     default: "report_output"
@@ -36,36 +36,44 @@ inputs:
     description: "Directory to save screenshots"
     required: false
     default: "screenshots"
-  plusemail:
+  plus_email:
     description: "Send HTML report via email"
     required: false
     default: "false"
-  shouldopenreport:
+  should_open_report:
     description: "When to open the report (always, failed, never)"
     required: false
     default: "failed"
-  generatexml:
+  generate_xml:
     description: "Generate JUnit-style XML"
     required: false
     default: "false"
-  xmlreport:
+  xml_report:
     description: "Path to XML report"
     required: false
     default: ""
-  usepoetry:
+  use_poetry:
     description: "If true, run pytest through poetry (poetry run pytest)"
     required: false
     default: "false"
-  gitbranch:
-    description: "If value passed, will show git branch name "
+  use_uv:
+    description: "If true, run pytest through uv (uv run pytest)"
     required: false
-    default: "NA"
-  gitcommit:
+    default: "false"
+  git_branch:
+    description: "If value passed, will show git branch name"
+    required: false
+    default: ""
+  git_commit:
     description: "If value passed, will show git commit id"
     required: false
-    default: "NA"
-  publish_github_summary:
-    description: "GitHub secret token used to post a summary comment on pull requests (pass GITHUB_TOKEN from workflow secrets)"
+    default: ""
+  post_pr_comment:
+    description: "Post a summary comment on pull requests"
+    required: false
+    default: "false"
+  github_token:
+    description: "GitHub token used to post pull request comments"
     required: false
     default: ""
   upload_html_artifact:
@@ -86,20 +94,22 @@ runs:
 
     - name: Run entrypoint
       env:
-        INPUT_TESTPATH: ${{ inputs.testpath }}
-        INPUT_PYTESTARGS: ${{ inputs.pytestargs }}
-        INPUT_JSONREPORT: ${{ inputs.jsonreport }}
+        INPUT_TEST_PATH: ${{ inputs.test_path }}
+        INPUT_PYTEST_ARGS: ${{ inputs.pytest_args }}
+        INPUT_JSON_REPORT: ${{ inputs.json_report }}
         INPUT_SCREENSHOTS: ${{ inputs.screenshots }}
-        INPUT_HTMLOUTPUT: ${{ inputs.htmloutput }}
-        INPUT_PLUSEMAIL: ${{ inputs.plusemail }}
-        INPUT_GENERATEXML: ${{ inputs.generatexml }}
-        INPUT_XMLREPORT: ${{ inputs.xmlreport }}
-        INPUT_CAPTURESCREENSHOTS: ${{ inputs.capturescreenshots }}
-        INPUT_SHOULDOPENREPORT: ${{ inputs.shouldopenreport }}
-        INPUT_USEPOETRY: ${{ inputs.usepoetry }}
-        INPUT_GITBRANCH: ${{ inputs.gitbranch }}
-        INPUT_GITCOMMIT: ${{ inputs.gitcommit }}
-        INPUT_PUBLISH_GITHUB_SUMMARY: ${{ inputs.publish_github_summary }}
+        INPUT_HTML_OUTPUT: ${{ inputs.html_output }}
+        INPUT_PLUS_EMAIL: ${{ inputs.plus_email }}
+        INPUT_GENERATE_XML: ${{ inputs.generate_xml }}
+        INPUT_XML_REPORT: ${{ inputs.xml_report }}
+        INPUT_CAPTURE_SCREENSHOTS: ${{ inputs.capture_screenshots }}
+        INPUT_SHOULD_OPEN_REPORT: ${{ inputs.should_open_report }}
+        INPUT_USE_POETRY: ${{ inputs.use_poetry }}
+        INPUT_USE_UV: ${{ inputs.use_uv }}
+        INPUT_GIT_BRANCH: ${{ inputs.git_branch }}
+        INPUT_GIT_COMMIT: ${{ inputs.git_commit }}
+        INPUT_POST_PR_COMMENT: ${{ inputs.post_pr_comment }}
+        INPUT_GITHUB_TOKEN: ${{ inputs.github_token }}
       run: "${GITHUB_ACTION_PATH}/entrypoint.sh"
       shell: bash
 
@@ -108,9 +118,5 @@ runs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.html_artifact_name }}
-        path: ${{ inputs.htmloutput }}
+        path: ${{ inputs.html_output }}
         if-no-files-found: warn
-  
-branding:
-  icon: "camera"
-  color: "green"
