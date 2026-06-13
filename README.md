@@ -51,6 +51,8 @@ With defaults this will run pytest, generate an HTML report, upload it as a work
     github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
+> **Security note:** Always use `secrets.GITHUB_TOKEN` rather than a personal access token — it is automatically scoped to the current repository and expires after the run. The token only needs `issues: write` permission. If your repo accepts PRs from forks, review your workflow's trigger settings before enabling `post_pr_comment`, as fork workflows may have access to the token depending on your repository configuration.
+
 **Poetry project:**
 
 ```yaml
