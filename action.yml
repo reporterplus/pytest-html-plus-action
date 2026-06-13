@@ -65,7 +65,7 @@ inputs:
     required: false
     default: "NA"
   publish_github_summary:
-    description: "GitHub secret token used to post a summary comment on pull requests (pass ${{ secrets.GITHUB_TOKEN }})"
+    description: "GitHub secret token used to post a summary comment on pull requests (pass GITHUB_TOKEN from workflow secrets)"
     required: false
     default: ""
   upload_html_artifact:
