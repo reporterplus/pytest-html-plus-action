@@ -80,7 +80,7 @@ PY
   then
     echo "👉 Exposed step outputs: total, passed, failed, skipped, duration"
 
-    if [ -n "${INPUT_GITHUB_TOKEN}" ]; then
+    if [ -n "${INPUT_PUBLISH_GITHUB_SUMMARY}" ]; then
       echo "👉 Attempting to post PR summary comment"
       if python - "${JSON_REPORT_PATH}" <<'PY'
 import json, os, sys, urllib.request, urllib.error
@@ -106,7 +106,7 @@ summary = (
 )
 event_path = os.environ.get("GITHUB_EVENT_PATH")
 repo = os.environ.get("GITHUB_REPOSITORY")
-token = os.environ.get("INPUT_GITHUB_TOKEN")
+token = os.environ.get("INPUT_PUBLISH_GITHUB_SUMMARY")
 if not (event_path and repo and token):
     sys.stderr.write("Warning: missing GitHub context or token; skipping PR comment.\n")
     sys.exit(0)

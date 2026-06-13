@@ -64,18 +64,18 @@ inputs:
     description: "If value passed, will show git commit id"
     required: false
     default: "NA"
-  github_token:
-    description: "GitHub token used to post a summary comment on pull requests"
+  publish_github_summary:
+    description: "GitHub secret token used to post a summary comment on pull requests (pass ${{ secrets.GITHUB_TOKEN }})"
     required: false
     default: ""
   upload_html_artifact:
     description: "If true, upload the generated HTML report directory as a GitHub Actions artifact"
     required: false
-    default: "false"
+    default: "true"
   html_artifact_name:
     description: "Artifact name for the uploaded HTML report"
     required: false
-    default: "pytest-html-report"
+    default: "pytest-html-plus-report"
 
 runs:
   using: "composite"
@@ -99,7 +99,7 @@ runs:
         INPUT_USEPOETRY: ${{ inputs.usepoetry }}
         INPUT_GITBRANCH: ${{ inputs.gitbranch }}
         INPUT_GITCOMMIT: ${{ inputs.gitcommit }}
-        INPUT_GITHUB_TOKEN: ${{ inputs.github_token }}
+        INPUT_PUBLISH_GITHUB_SUMMARY: ${{ inputs.publish_github_summary }}
       run: "${GITHUB_ACTION_PATH}/entrypoint.sh"
       shell: bash
 
